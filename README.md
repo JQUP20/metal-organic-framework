@@ -22,6 +22,7 @@
 
 #### ✅ 第一天：AI 与 MOF 的基础认知与科学范式
 #### ✅ 第二天：传统机器学习方法在 MOF 性质预测中的应用
+#### ✅ 第三天：图神经网络（GNN）与 MOF 结构-性能建模
 
 ### 第一天：理论部分
 - ✅ 人工智能的科学革命：从符号主义到深度学习的演进路径
@@ -64,6 +65,31 @@
 - ✅ 案例实战：CO₂/CH₄ 吸附预测与选择性分析
 - ✅ 模型保存与部署
 
+### 第三天：理论部分
+- ✅ 图神经网络基础：从分子图到晶体图表示
+- ✅ 图的数学定义：节点、边、邻接矩阵
+- ✅ MOF的图表示方法：
+  - 节点特征设计（原子属性）
+  - 边特征设计（距离、键角、Gaussian扩展）
+  - 周期性边界条件处理
+- ✅ 消息传递神经网络 (MPNN) 框架
+- ✅ 主流GNN模型详解：
+  - CGCNN (Crystal Graph Convolutional Neural Network)
+  - MEGNet (Materials Graph Network)
+  - SchNet, ALIGNN, DimeNet
+- ✅ GNN在MOF中的应用：性质预测、结构筛选
+- ✅ 模型训练与优化策略
+- ✅ 案例研究：QMOF带隙预测、CO₂吸附预测
+
+### 第三天：实操部分
+- ✅ MOF结构到图的转换工具 (graph_builder.py)
+- ✅ CGCNN模型实现（门控消息传递）
+- ✅ SimpleMEGNet模型实现（三级图）
+- ✅ Gaussian距离扩展
+- ✅ PyTorch Geometric集成
+- ✅ 批量图构建
+- ✅ 模型测试与验证
+
 ---
 
 ## 📁 项目结构
@@ -83,11 +109,13 @@ metal-organic-framework/
 │   │   ├── 01_ai_fundamentals.md              # AI 基础理论
 │   │   ├── 02_mof_fundamentals.md             # MOF 基础知识
 │   │   ├── 03_ai_mof_integration.md           # AI 与 MOF 融合趋势
-│   │   └── 04_traditional_ml_methods.md       # 传统机器学习方法 ✨
-│   └── tutorials/              # 教程
+│   │   ├── 04_traditional_ml_methods.md       # 传统机器学习方法
+│   │   └── 05_gnn_for_mof.md                  # 图神经网络理论 ⭐
+│   ├── tutorials/              # 教程
+│   └── DAY3_SUMMARY.md         # 第三天课程总结 ⭐
 ├── notebooks/                   # Jupyter Notebooks
 │   ├── day1_tutorial.ipynb     # 第一天实操教程
-│   └── day2_tutorial.ipynb     # 第二天实操教程 ✨
+│   └── day2_tutorial.ipynb     # 第二天实操教程
 ├── src/                         # 源代码
 │   ├── visualization/          # 可视化工具
 │   │   └── mof_visualizer.py
@@ -98,10 +126,13 @@ metal-organic-framework/
 │   │   └── geometric_features.py
 │   ├── calculations/           # 性能计算
 │   │   └── property_calculator.py
-│   └── ml_models/              # 机器学习模型 ✨
-│       ├── model_trainer.py              # 模型训练器
-│       ├── model_evaluator.py            # 模型评估器
-│       └── interpretability.py           # 可解释性分析
+│   ├── ml_models/              # 机器学习模型 (Day 2)
+│   │   ├── model_trainer.py              # 模型训练器
+│   │   ├── model_evaluator.py            # 模型评估器
+│   │   └── interpretability.py           # 可解释性分析
+│   └── graph_models/           # 图神经网络模型 (Day 3) ⭐
+│       ├── graph_builder.py              # MOF到图转换
+│       └── gnn_models.py                 # CGCNN & MEGNet实现
 ├── tests/                       # 测试代码
 ├── requirements.txt             # Python 依赖 (pip)
 ├── environment.yml              # Conda 环境配置
@@ -236,6 +267,61 @@ shap_analyzer.summary_plot(plot_type='dot', max_display=20)  # 蜂群图
 shap_analyzer.waterfall_plot(sample_idx=0)  # 单样本解释
 ```
 
+**第三天新增：图神经网络**
+
+```python
+# 构建MOF图
+from src.graph_models import MOFGraphBuilder
+
+builder = MOFGraphBuilder(cutoff_radius=8.0, max_neighbors=12)
+graph = builder.build_graph_from_cif('data/examples/example_mof.cif')
+
+# 转换为PyTorch Geometric格式
+data = builder.to_pytorch_geometric(graph)
+data.y = torch.tensor([3.5])  # 目标值（如吸附量）
+
+print(f"节点数: {data.x.shape[0]}")
+print(f"边数: {data.edge_index.shape[1]}")
+```
+
+```python
+# 训练CGCNN模型
+import torch
+from src.graph_models import CGCNN
+from torch_geometric.loader import DataLoader
+
+# 准备数据集
+dataset = [...]  # PyG Data对象列表
+loader = DataLoader(dataset, batch_size=32, shuffle=True)
+
+# 创建模型
+model = CGCNN(
+    node_input_dim=4,
+    edge_input_dim=24,
+    hidden_dim=128,
+    num_conv_layers=4,
+    dropout=0.1
+)
+
+# 训练
+optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
+criterion = torch.nn.MSELoss()
+
+for epoch in range(100):
+    for batch in loader:
+        optimizer.zero_grad()
+        pred = model(batch)
+        loss = criterion(pred, batch.y)
+        loss.backward()
+        optimizer.step()
+
+# 预测
+model.eval()
+with torch.no_grad():
+    prediction = model(data)
+    print(f"预测值: {prediction.item():.3f}")
+```
+
 ---
 
 ## 📖 学习路径
@@ -278,6 +364,26 @@ shap_analyzer.waterfall_plot(sample_idx=0)  # 单样本解释
 1. 下载真实 QMOF 数据集
 2. 复现文献中的机器学习模型
 3. 探索特征交互效应
+
+### 第三天：图神经网络 (6-8 小时)
+
+**理论学习 (2-3 小时)**
+1. 阅读 [图神经网络理论](docs/theory/05_gnn_for_mof.md)
+2. 理解消息传递机制
+3. 学习主流GNN模型（CGCNN, MEGNet, ALIGNN等）
+
+**实操练习 (4-5 小时)**
+1. 阅读 [第三天课程总结](docs/DAY3_SUMMARY.md)
+2. 使用 `graph_builder.py` 将MOF转换为图
+3. 测试 CGCNN 和 SimpleMEGNet 模型
+4. 理解Gaussian距离扩展
+5. 对比GNN与传统ML的性能
+
+**进阶任务 (可选)**
+1. 实现注意力可视化
+2. 在QMOF数据集上训练GNN
+3. 尝试实现ALIGNN模型
+4. 探索多任务学习
 
 ---
 
@@ -331,6 +437,28 @@ shap_analyzer.waterfall_plot(sample_idx=0)  # 单样本解释
 - **generate_sample_data.py**: 生成模拟 MOF 数据集
   - 吸附数据集（CO₂、CH₄）
   - 能带结构数据集
+
+### 第三天工具 ⭐
+
+**图构建**
+- **graph_builder.py**: MOF结构到图的转换
+  - CIF文件读取（基于ASE）
+  - 邻接矩阵构建（距离截断/KNN）
+  - 节点特征提取（元素属性）
+  - 边特征提取（Gaussian距离扩展）
+  - 周期性边界条件处理
+  - PyTorch Geometric格式转换
+
+**图神经网络模型**
+- **gnn_models.py**: GNN模型实现
+  - **CGCNN**: Crystal Graph Convolutional Neural Network
+    - 门控消息传递
+    - 残差连接
+    - 专为晶体材料设计
+  - **SimpleMEGNet**: 简化的Materials Graph Network
+    - 三级图（节点、边、全局）
+    - 丰富的信息流
+    - 更强的表达能力
 
 ---
 
@@ -451,9 +579,9 @@ MIT License
   - 理论：机器学习算法、特征工程、模型评估、可解释性
   - 实操：多算法训练、超参数优化、SHAP分析、案例实战
 
-- **第三天**: 深度学习与图神经网络 (规划中)
-  - 理论：神经网络、图神经网络、注意力机制
-  - 实操：PyTorch基础、GNN模型、MOF图表示
+- **第三天**: 图神经网络（GNN）与 MOF 结构-性能建模 ✅
+  - 理论：图表示、消息传递、主流GNN模型（CGCNN, MEGNet, ALIGNN等）
+  - 实操：图构建、CGCNN/MEGNet实现、PyTorch Geometric
 
 - **第四天**: 生成模型与 MOF 逆向设计 (规划中)
   - 理论：VAE、GAN、扩散模型
@@ -471,9 +599,12 @@ MIT License
 
 ✅ 理解 AI 在材料科学中的应用原理
 ✅ 熟练使用 Python 处理和分析 MOF 结构
-✅ 构建 MOF 性质预测的机器学习模型
+✅ 构建 MOF 性质预测的机器学习模型（传统ML + GNN）
 ✅ 使用 SHAP 等工具解释模型决策
 ✅ 掌握特征工程和超参数优化技巧
+✅ 理解图神经网络的工作原理
+✅ 实现并训练CGCNN和MEGNet模型
+✅ 将MOF结构转换为图表示
 ✅ 为深度学习和高级方法打下基础
 
 ---
@@ -485,6 +616,23 @@ MIT License
 ---
 
 ## 🔄 更新日志
+
+**v0.3.0** (2024-11)
+- ✅ 新增第三天完整课程材料
+- ✅ 新增图神经网络理论文档（70+页）
+  - GNN基础、消息传递机制
+  - CGCNN, MEGNet, SchNet, ALIGNN, DimeNet详解
+  - MOF图表示方法
+  - 案例研究和性能对比
+- ✅ 新增MOF图构建工具 (graph_builder.py)
+  - 自动构建邻接矩阵
+  - Gaussian距离扩展
+  - 周期性边界条件处理
+- ✅ 新增GNN模型实现
+  - CGCNN（门控消息传递）
+  - SimpleMEGNet（三级图）
+- ✅ 新增第三天课程总结 (DAY3_SUMMARY.md)
+- ✅ 更新依赖：PyTorch Geometric, DGL
 
 **v0.2.0** (2024-11)
 - ✅ 新增第二天完整课程材料
