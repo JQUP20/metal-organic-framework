@@ -51,3 +51,12 @@ ipywidgets>=8.0.0
 tqdm>=4.65.0
 pyyaml>=6.0
 joblib>=1.2.0
+
+# LLM Tools (Day 5) - Optional
+# Uncomment if using LLM features:
+# openai>=1.0.0              # OpenAI GPT-4 API
+# anthropic>=0.7.0           # Anthropic Claude API
+# langchain>=0.1.0           # LLM application framework
+# llama-index>=0.9.0         # RAG framework
+# transformers>=4.35.0       # Hugging Face transformers
+# sentence-transformers>=2.2.0  # Embeddings for semantic search
