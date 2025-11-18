@@ -23,6 +23,7 @@
 #### ✅ 第一天：AI 与 MOF 的基础认知与科学范式
 #### ✅ 第二天：传统机器学习方法在 MOF 性质预测中的应用
 #### ✅ 第三天：图神经网络（GNN）与 MOF 结构-性能建模
+#### ✅ 第四天：生成模型与逆向 MOF 设计
 
 ### 第一天：理论部分
 - ✅ 人工智能的科学革命：从符号主义到深度学习的演进路径
@@ -90,6 +91,47 @@
 - ✅ 批量图构建
 - ✅ 模型测试与验证
 
+### 第四天：理论部分
+- ✅ 生成模型 vs 预测模型：从"性质预测"到"结构生成"的范式转变
+- ✅ 变分自编码器（VAE）：
+  - ELBO损失函数与重参数化技巧
+  - MOF-VAE架构设计
+  - 潜在空间学习与插值
+- ✅ 扩散模型（Diffusion Models）：
+  - DDPM前向和反向过程
+  - 噪声调度策略（linear, cosine）
+  - 时间条件生成
+  - E(3)等变扩散模型
+- ✅ 逆向设计策略：
+  - 潜在空间优化
+  - 条件生成
+  - 多目标优化
+- ✅ 贝叶斯优化（Bayesian Optimization）：
+  - 高斯过程代理模型
+  - 采集函数（EI, UCB, PI）
+  - 探索-利用平衡
+- ✅ 可合成性评估：SA Score、稳定性预测
+- ✅ 案例研究：CO₂捕获MOF的目标导向设计
+
+### 第四天：实操部分
+- ✅ MOF-VAE模型实现：
+  - GNN编码器（图→潜在分布）
+  - 图解码器（潜在向量→图）
+  - ELBO损失与训练循环
+  - 潜在空间采样与插值
+- ✅ MOF扩散模型实现：
+  - 正弦位置编码（时间嵌入）
+  - 噪声预测网络
+  - 前向扩散与反向去噪
+  - DDPM采样算法
+- ✅ 贝叶斯优化工具：
+  - 高斯过程实现
+  - 三种采集函数（EI/UCB/PI）
+  - 多起点优化
+  - MOF逆向设计器
+- ✅ 端到端逆向设计流程：VAE + BO
+- ✅ 性质导向的MOF生成与优化
+
 ---
 
 ## 📁 项目结构
@@ -110,9 +152,11 @@ metal-organic-framework/
 │   │   ├── 02_mof_fundamentals.md             # MOF 基础知识
 │   │   ├── 03_ai_mof_integration.md           # AI 与 MOF 融合趋势
 │   │   ├── 04_traditional_ml_methods.md       # 传统机器学习方法
-│   │   └── 05_gnn_for_mof.md                  # 图神经网络理论 ⭐
+│   │   ├── 05_gnn_for_mof.md                  # 图神经网络理论 ⭐
+│   │   └── 06_generative_models_for_mof.md    # 生成模型理论 🎨
 │   ├── tutorials/              # 教程
-│   └── DAY3_SUMMARY.md         # 第三天课程总结 ⭐
+│   ├── DAY3_SUMMARY.md         # 第三天课程总结 ⭐
+│   └── DAY4_SUMMARY.md         # 第四天课程总结 🎨
 ├── notebooks/                   # Jupyter Notebooks
 │   ├── day1_tutorial.ipynb     # 第一天实操教程
 │   └── day2_tutorial.ipynb     # 第二天实操教程
@@ -130,15 +174,21 @@ metal-organic-framework/
 │   │   ├── model_trainer.py              # 模型训练器
 │   │   ├── model_evaluator.py            # 模型评估器
 │   │   └── interpretability.py           # 可解释性分析
-│   └── graph_models/           # 图神经网络模型 (Day 3) ⭐
-│       ├── graph_builder.py              # MOF到图转换
-│       └── gnn_models.py                 # CGCNN & MEGNet实现
+│   ├── graph_models/           # 图神经网络模型 (Day 3) ⭐
+│   │   ├── graph_builder.py              # MOF到图转换
+│   │   └── gnn_models.py                 # CGCNN & MEGNet实现
+│   └── generative_models/      # 生成模型 (Day 4) 🎨
+│       ├── mof_vae.py                    # MOF-VAE模型
+│       ├── mof_diffusion.py              # MOF扩散模型
+│       └── bayesian_optimizer.py         # 贝叶斯优化工具
 ├── tests/                       # 测试代码
 ├── requirements.txt             # Python 依赖 (pip)
 ├── environment.yml              # Conda 环境配置
 └── README.md                    # 本文件
 
 ✨ = 第二天新增内容
+⭐ = 第三天新增内容
+🎨 = 第四天新增内容
 ```
 
 ---
@@ -322,6 +372,97 @@ with torch.no_grad():
     print(f"预测值: {prediction.item():.3f}")
 ```
 
+**第四天新增：生成模型与逆向设计**
+
+```python
+# 训练MOF-VAE模型
+from src.generative_models.mof_vae import MOFVAE, MOFVAETrainer
+import torch
+from torch_geometric.loader import DataLoader
+
+# 加载数据集
+train_dataset = [...]  # MOF图数据集
+train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+
+# 创建VAE模型
+vae_model = MOFVAE(
+    node_input_dim=4,
+    edge_input_dim=24,
+    hidden_dim=128,
+    latent_dim=64,  # 潜在空间维度
+    max_num_nodes=100,
+    beta=0.5  # KL散度权重
+)
+
+# 训练
+optimizer = torch.optim.Adam(vae_model.parameters(), lr=1e-3)
+trainer = MOFVAETrainer(vae_model, optimizer, device='cuda')
+
+for epoch in range(200):
+    train_loss = trainer.train_epoch(train_loader)
+    print(f"Epoch {epoch}: Loss = {train_loss['loss']:.4f}")
+
+# 生成新MOF
+node_gen, adj_gen, edge_gen = vae_model.sample(num_samples=10)
+print(f"生成了 10 个新的 MOF 结构")
+```
+
+```python
+# 贝叶斯优化逆向设计
+from src.generative_models.bayesian_optimizer import MOFInverseDesigner
+
+# 定义性质预测函数
+def predict_co2_uptake(structure_dict):
+    # 从生成的结构预测CO2吸附量
+    node = structure_dict['node_features']
+    adj = structure_dict['adj_matrix']
+    # ... 特征提取和预测
+    return predicted_uptake
+
+# 创建逆向设计器
+designer = MOFInverseDesigner(
+    vae_model=vae_model,
+    property_predictor=predict_co2_uptake,
+    latent_bounds=[[-3.0, 3.0]] * 64  # 搜索范围
+)
+
+# 优化：寻找高CO2吸附量的MOF
+result = designer.optimize_for_property(
+    target_property='CO2_uptake',
+    n_iterations=50,
+    acquisition='ei',  # 期望改进
+    verbose=True
+)
+
+print(f"最优CO2吸附量: {result['property_value']:.2f} mmol/g")
+print(f"优化完成，共评估 {len(result['optimization_history'][0])} 个MOF")
+```
+
+```python
+# 扩散模型生成MOF
+from src.generative_models.mof_diffusion import MOFDiffusion
+
+# 创建扩散模型
+diffusion_model = MOFDiffusion(
+    node_dim=4,
+    edge_dim=24,
+    hidden_dim=128,
+    num_timesteps=1000
+)
+
+# 从噪声生成MOF（需要提供图拓扑）
+template_edge_index = ...  # 图的边索引（拓扑）
+template_edge_attr = ...   # 边特征
+
+x_generated = diffusion_model.sample(
+    num_nodes=50,
+    edge_index=template_edge_index,
+    edge_attr=template_edge_attr
+)
+
+print(f"生成的节点特征: {x_generated.shape}")
+```
+
 ---
 
 ## 📖 学习路径
@@ -384,6 +525,33 @@ with torch.no_grad():
 2. 在QMOF数据集上训练GNN
 3. 尝试实现ALIGNN模型
 4. 探索多任务学习
+
+### 第四天：生成模型与逆向设计 (8-10 小时)
+
+**理论学习 (3-4 小时)**
+1. 阅读 [生成模型理论](docs/theory/06_generative_models_for_mof.md)
+2. 理解VAE、扩散模型的原理
+3. 学习贝叶斯优化与逆向设计策略
+4. 了解可合成性评估方法
+
+**实操练习 (5-6 小时)**
+1. 阅读 [第四天课程总结](docs/DAY4_SUMMARY.md)
+2. 训练 MOF-VAE 模型并理解潜在空间
+3. 使用 VAE 生成新 MOF 结构
+4. 实现潜在空间插值可视化
+5. 运行贝叶斯优化进行逆向设计
+6. 测试扩散模型生成过程
+7. 完成练习题：
+   - 优化特定性质（如高CO₂吸附量）
+   - 多目标优化实验
+   - 评估生成MOF的合理性
+
+**进阶任务 (可选)**
+1. 实现条件VAE（cVAE）
+2. 探索E(3)等变扩散模型
+3. 实现多目标Pareto优化
+4. 结合DFT计算验证生成的MOF
+5. 尝试强化学习辅助生成
 
 ---
 
@@ -459,6 +627,51 @@ with torch.no_grad():
     - 三级图（节点、边、全局）
     - 丰富的信息流
     - 更强的表达能力
+
+### 第四天工具 🎨
+
+**生成模型**
+- **mof_vae.py**: MOF变分自编码器
+  - **MOFEncoder**: GNN编码器（图→潜在分布）
+  - **MOFDecoder**: 图解码器（潜在向量→图）
+  - **MOFVAE**: 完整VAE模型
+    - 重参数化技巧
+    - ELBO损失函数
+    - 潜在空间采样与插值
+  - **MOFVAETrainer**: 训练器
+    - 支持训练/验证循环
+    - 检查点保存/加载
+    - 损失记录
+
+- **mof_diffusion.py**: MOF扩散模型
+  - **SinusoidalPositionEmbeddings**: 时间步编码
+  - **NoisePredictor**: 噪声预测网络（基于GNN）
+  - **GaussianDiffusion**: 扩散过程管理
+    - 前向扩散（加噪）
+    - 反向去噪（采样）
+    - 多种噪声调度（linear, cosine）
+  - **MOFDiffusion**: 完整扩散模型
+    - DDPM算法
+    - 支持轨迹采样
+  - **MOFDiffusionTrainer**: 训练器
+
+**逆向设计工具**
+- **bayesian_optimizer.py**: 贝叶斯优化工具
+  - **GaussianProcess**: 高斯过程代理模型
+    - RBF/Matérn核函数
+    - 预测均值和方差
+  - **AcquisitionFunction**: 采集函数
+    - 期望改进（EI）
+    - 上置信界（UCB）
+    - 改进概率（PI）
+  - **BayesianOptimizer**: 贝叶斯优化器
+    - 自动初始采样
+    - 多起点优化
+    - 历史记录跟踪
+  - **MOFInverseDesigner**: MOF逆向设计器
+    - VAE + BO集成
+    - 性质导向生成
+    - 潜在空间优化
 
 ---
 
