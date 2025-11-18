@@ -24,6 +24,7 @@
 #### ✅ 第二天：传统机器学习方法在 MOF 性质预测中的应用
 #### ✅ 第三天：图神经网络（GNN）与 MOF 结构-性能建模
 #### ✅ 第四天：生成模型与逆向 MOF 设计
+#### ✅ 第五天：大语言模型（LLM）在 MOF 智能设计中的应用
 
 ### 第一天：理论部分
 - ✅ 人工智能的科学革命：从符号主义到深度学习的演进路径
@@ -132,6 +133,58 @@
 - ✅ 端到端逆向设计流程：VAE + BO
 - ✅ 性质导向的MOF生成与优化
 
+### 第五天：理论部分
+- ✅ 大语言模型的崛起与科学研究新范式
+  - ChatGPT → MatGPT → ChemLLM 演进
+  - 从通用LLM到材料专用LLM
+  - LLM在材料科学中的科学范式转变
+- ✅ LLM在材料科学中的认知与生成能力
+  - Text-to-Structure（文本到结构）生成
+  - Text-to-Experiment（文本到实验）指导
+  - 三种实现途径：RAG、端到端、混合方法
+- ✅ 材料知识图谱与LLM的融合
+  - 知识图谱基础（MaterialsKG、MATTERverse）
+  - 检索增强生成（RAG）系统
+  - 向量数据库与语义检索
+- ✅ LLM在MOF研究中的应用
+  - 文献挖掘与知识抽取
+  - 语义筛选与智能检索
+  - AutoML自动化分析
+  - 提示工程（Prompt Engineering）
+- ✅ 多模态智能体（Multi-agent）助力自主材料发现
+  - 智能体架构设计
+  - 自主发现循环
+  - 经验回放与持续学习
+
+### 第五天：实操部分
+- ✅ Text-to-Structure生成工具：
+  - LLM参数提取（从自然语言描述）
+  - 三种生成方法：检索、生成、混合
+  - 结构验证与排序
+- ✅ 文献语料的自动标注与知识抽取：
+  - 基于正则表达式的信息提取
+  - LLM增强的语义解析
+  - 知识图谱构建
+- ✅ RAG（检索增强生成）系统：
+  - 文档分块与向量化
+  - 向量数据库构建
+  - 语义相似度检索
+  - 上下文增强的答案生成
+- ✅ 提示工程工具包：
+  - 预定义提示模板（提取、设计、预测）
+  - Few-shot学习管理器
+  - Chain-of-Thought（思维链）提示
+  - 自动提示优化
+- ✅ AutoML与LLM集成：
+  - 自动特征工程
+  - 智能模型选择
+  - 超参数优化
+- ✅ 自学习型MOF智能体：
+  - 文献搜索→设计→预测→评估循环
+  - 经验记忆与知识积累
+  - 自主材料发现
+- ✅ 端到端设计流程：文本→结构→性质预测
+
 ---
 
 ## 📁 项目结构
@@ -153,13 +206,16 @@ metal-organic-framework/
 │   │   ├── 03_ai_mof_integration.md           # AI 与 MOF 融合趋势
 │   │   ├── 04_traditional_ml_methods.md       # 传统机器学习方法
 │   │   ├── 05_gnn_for_mof.md                  # 图神经网络理论 ⭐
-│   │   └── 06_generative_models_for_mof.md    # 生成模型理论 🎨
+│   │   ├── 06_generative_models_for_mof.md    # 生成模型理论 🎨
+│   │   └── 07_llm_for_mof.md                  # LLM应用理论 🤖
 │   ├── tutorials/              # 教程
 │   ├── DAY3_SUMMARY.md         # 第三天课程总结 ⭐
-│   └── DAY4_SUMMARY.md         # 第四天课程总结 🎨
+│   ├── DAY4_SUMMARY.md         # 第四天课程总结 🎨
+│   └── DAY5_SUMMARY.md         # 第五天课程总结 🤖
 ├── notebooks/                   # Jupyter Notebooks
 │   ├── day1_tutorial.ipynb     # 第一天实操教程
-│   └── day2_tutorial.ipynb     # 第二天实操教程
+│   ├── day2_tutorial.ipynb     # 第二天实操教程
+│   └── day5_tutorial.ipynb     # 第五天实操教程 🤖
 ├── src/                         # 源代码
 │   ├── visualization/          # 可视化工具
 │   │   └── mof_visualizer.py
@@ -177,10 +233,15 @@ metal-organic-framework/
 │   ├── graph_models/           # 图神经网络模型 (Day 3) ⭐
 │   │   ├── graph_builder.py              # MOF到图转换
 │   │   └── gnn_models.py                 # CGCNN & MEGNet实现
-│   └── generative_models/      # 生成模型 (Day 4) 🎨
-│       ├── mof_vae.py                    # MOF-VAE模型
-│       ├── mof_diffusion.py              # MOF扩散模型
-│       └── bayesian_optimizer.py         # 贝叶斯优化工具
+│   ├── generative_models/      # 生成模型 (Day 4) 🎨
+│   │   ├── mof_vae.py                    # MOF-VAE模型
+│   │   ├── mof_diffusion.py              # MOF扩散模型
+│   │   └── bayesian_optimizer.py         # 贝叶斯优化工具
+│   └── llm_tools/              # LLM工具 (Day 5) 🤖
+│       ├── text_to_structure.py          # Text-to-Structure生成
+│       ├── mof_agent_system.py           # MOF智能体系统
+│       ├── prompt_engineering.py         # 提示工程工具
+│       └── rag_system.py                 # RAG检索增强生成
 ├── tests/                       # 测试代码
 ├── requirements.txt             # Python 依赖 (pip)
 ├── environment.yml              # Conda 环境配置
@@ -189,6 +250,7 @@ metal-organic-framework/
 ✨ = 第二天新增内容
 ⭐ = 第三天新增内容
 🎨 = 第四天新增内容
+🤖 = 第五天新增内容
 ```
 
 ---
@@ -463,6 +525,147 @@ x_generated = diffusion_model.sample(
 print(f"生成的节点特征: {x_generated.shape}")
 ```
 
+**第五天新增：LLM智能设计工具**
+
+```python
+# Text-to-Structure: 从文本生成MOF
+from src.llm_tools.text_to_structure import Text2StructureGenerator
+
+# 初始化生成器（可接入真实LLM API）
+generator = Text2StructureGenerator()
+
+# 自然语言描述
+query = "Design a copper-based MOF with paddle-wheel clusters for CO2 capture"
+
+# 生成MOF候选
+result = generator.generate_from_text(
+    query,
+    method="hybrid",  # retrieval, generation, 或 hybrid
+    top_k=3,
+    verbose=True
+)
+
+# 查看结果
+for i, candidate in enumerate(result['candidates']):
+    print(f"{i+1}. {candidate['name']}")
+    print(f"   Metal: {candidate['metal']}, Linker: {candidate['linker']}")
+    print(f"   Predicted CO2 uptake: {candidate['predicted_co2']:.2f} mmol/g")
+```
+
+```python
+# RAG系统：检索增强生成
+from src.llm_tools.rag_system import MOF_RAG_System, KnowledgeBase
+
+# 构建知识库
+kb = KnowledgeBase()
+kb.add_paper(
+    title="UiO-66: A Highly Stable Zr-MOF",
+    authors="Cavka et al.",
+    year=2008,
+    abstract="UiO-66 is a zirconium-based MOF with exceptional stability..."
+)
+
+# 创建RAG系统
+rag = MOF_RAG_System()
+rag.add_documents(
+    kb.get_all_documents(),
+    kb.get_metadata(),
+    chunk_size=300
+)
+
+# 查询知识库
+result = rag.query(
+    "What is the CO2 uptake of UiO-66?",
+    top_k=3,
+    return_sources=True
+)
+
+print(f"Answer: {result['answer']}")
+print(f"Sources: {len(result['sources'])} documents retrieved")
+```
+
+```python
+# MOF智能体：自主发现系统
+from src.llm_tools.mof_agent_system import MOFAgent
+
+# 创建智能体
+agent = MOFAgent()
+
+# 定义目标
+goal = {
+    "property": "CO2_uptake",
+    "target_value": 8.0,  # mmol/g
+    "constraints": {
+        "stability": "high",
+        "cost": "low"
+    }
+}
+
+# 启动自主发现
+result = agent.discover_mof(goal, max_iterations=5)
+
+print(f"Best MOF found: {result['best_mof']['name']}")
+print(f"Predicted CO2 uptake: {result['best_mof']['predicted_value']:.2f} mmol/g")
+print(f"Iterations completed: {result['iterations_completed']}")
+```
+
+```python
+# 提示工程：优化LLM性能
+from src.llm_tools.prompt_engineering import PromptTemplate, ChainOfThoughtPrompt
+
+# 使用预定义模板
+template = PromptTemplate.get_template('extraction')
+prompt = template.format(
+    text="UiO-66 is a Zr-MOF with BDC linker, showing CO2 uptake of 3.0 mmol/g."
+)
+
+# Chain-of-Thought推理
+cot = ChainOfThoughtPrompt()
+cot_prompt = cot.generate(
+    task="predict MOF stability",
+    context={"mof_name": "UiO-66", "metal": "Zr", "linker": "BDC"}
+)
+
+# Few-shot学习
+from src.llm_tools.prompt_engineering import FewShotManager
+
+few_shot = FewShotManager()
+few_shot.add_example(
+    input_text="Cu-BTC MOF",
+    output_text="Metal: Cu, Linker: BTC, Topology: paddle-wheel"
+)
+
+few_shot_prompt = few_shot.generate_prompt(
+    new_input="Zr-UiO-66",
+    task="extract MOF components"
+)
+```
+
+```python
+# AutoML：自动机器学习
+from src.llm_tools.mof_agent_system import AutoMLOptimizer
+import pandas as pd
+
+# 加载数据
+df = pd.read_csv('data/examples/mof_adsorption_dataset.csv')
+X = df.drop(['mof_id', 'co2_uptake'], axis=1)
+y = df['co2_uptake']
+
+# 创建AutoML优化器
+automl = AutoMLOptimizer()
+
+# 自动优化
+result = automl.auto_optimize(
+    X, y,
+    task_description="Predict CO2 uptake for MOFs",
+    max_iterations=10
+)
+
+print(f"Best model: {result['best_model']['type']}")
+print(f"Best score: {result['best_score']:.4f}")
+print(f"Optimized features: {result['engineered_features'][:5]}...")
+```
+
 ---
 
 ## 📖 学习路径
@@ -552,6 +755,36 @@ print(f"生成的节点特征: {x_generated.shape}")
 3. 实现多目标Pareto优化
 4. 结合DFT计算验证生成的MOF
 5. 尝试强化学习辅助生成
+
+### 第五天：LLM智能设计 (8-10 小时)
+
+**理论学习 (3-4 小时)**
+1. 阅读 [LLM应用理论](docs/theory/07_llm_for_mof.md)
+2. 理解Text-to-Structure生成原理
+3. 学习RAG（检索增强生成）系统
+4. 了解提示工程技术
+5. 掌握智能体架构设计
+
+**实操练习 (5-6 小时)**
+1. 阅读 [第五天课程总结](docs/DAY5_SUMMARY.md)
+2. 运行 [第五天实操教程](notebooks/day5_tutorial.ipynb)
+3. 使用Text-to-Structure工具生成MOF
+4. 构建RAG系统并进行文献问答
+5. 测试提示工程模板和优化
+6. 运行AutoML自动优化实验
+7. 体验MOF智能体自主发现流程
+8. 完成练习题：
+   - 创建自定义提示模板
+   - 构建领域知识库
+   - 设计多轮对话智能体
+
+**进阶任务 (可选)**
+1. 接入真实LLM API（OpenAI、Anthropic、本地LLaMA）
+2. 使用sentence-transformers进行真实嵌入
+3. 集成FAISS或Chroma向量数据库
+4. 实现多智能体协作系统
+5. 构建完整的MOF发现平台
+6. 评估幻觉和提升输出质量
 
 ---
 
@@ -672,6 +905,78 @@ print(f"生成的节点特征: {x_generated.shape}")
     - VAE + BO集成
     - 性质导向生成
     - 潜在空间优化
+
+### 第五天工具 🤖
+
+**Text-to-Structure生成**
+- **text_to_structure.py**: 文本到MOF结构生成
+  - **MockLLM**: 模拟LLM（演示用）
+  - **Text2StructureGenerator**: 主生成器
+    - LLM参数提取
+    - 三种生成方法（retrieval/generation/hybrid）
+    - 候选排序与验证
+  - **StructureValidator**: 结构验证器
+    - 必要字段检查
+    - 性质合理性验证
+  - 易于集成真实LLM API
+
+**RAG检索增强生成**
+- **rag_system.py**: 完整RAG系统
+  - **SimpleVectorStore**: 向量数据库
+    - 文档存储与索引
+    - 余弦相似度检索
+    - Top-K检索
+  - **SimpleEmbedder**: 文本嵌入器
+    - 关键词权重嵌入（简化版）
+    - 可替换为sentence-transformers
+  - **MOF_RAG_System**: RAG主系统
+    - 文档分块与嵌入
+    - 语义检索
+    - 上下文增强生成
+    - 来源追踪
+  - **KnowledgeBase**: 知识库管理
+    - 论文管理
+    - MOF数据管理
+    - 元数据跟踪
+
+**智能体系统**
+- **mof_agent_system.py**: MOF智能体与AutoML
+  - **LiteratureMiner**: 文献挖掘器
+    - MOF名称提取
+    - 金属/配体识别
+    - 合成条件提取
+    - 性质数据提取
+    - 知识图谱构建
+  - **AutoMLOptimizer**: AutoML优化器
+    - 自动特征工程
+    - 模型搜索与选择
+    - 超参数优化
+    - 交叉验证
+  - **MOFAgent**: 自主发现智能体
+    - 文献搜索循环
+    - 候选设计
+    - 性质预测
+    - 结果评估与学习
+    - 经验记忆
+
+**提示工程**
+- **prompt_engineering.py**: 提示工程工具包
+  - **PromptTemplate**: 预定义模板
+    - 信息提取模板
+    - MOF设计模板
+    - 性质预测模板
+    - 文献总结模板
+  - **FewShotManager**: Few-shot学习
+    - 示例管理
+    - 自动提示生成
+    - 示例选择策略
+  - **ChainOfThoughtPrompt**: CoT提示
+    - 逐步推理生成
+    - 中间步骤展示
+  - **PromptOptimizer**: 提示优化器
+    - 自动变体生成
+    - 性能评估
+    - 最优提示选择
 
 ---
 
@@ -796,13 +1101,13 @@ MIT License
   - 理论：图表示、消息传递、主流GNN模型（CGCNN, MEGNet, ALIGNN等）
   - 实操：图构建、CGCNN/MEGNet实现、PyTorch Geometric
 
-- **第四天**: 生成模型与 MOF 逆向设计 (规划中)
-  - 理论：VAE、GAN、扩散模型
-  - 实操：MOF生成、性能导向设计
+- **第四天**: 生成模型与 MOF 逆向设计 ✅
+  - 理论：VAE、扩散模型、贝叶斯优化
+  - 实操：MOF-VAE、扩散模型、逆向设计
 
-- **第五天**: 高通量筛选与主动学习 (规划中)
-  - 理论：主动学习策略、不确定性量化
-  - 实操：高通量计算、候选MOF筛选
+- **第五天**: 大语言模型（LLM）在 MOF 智能设计中的应用 ✅
+  - 理论：LLM演进、Text-to-Structure、RAG系统、智能体
+  - 实操：文本生成MOF、文献挖掘、AutoML、自主发现
 
 ---
 
@@ -818,7 +1123,15 @@ MIT License
 ✅ 理解图神经网络的工作原理
 ✅ 实现并训练CGCNN和MEGNet模型
 ✅ 将MOF结构转换为图表示
-✅ 为深度学习和高级方法打下基础
+✅ 掌握生成模型（VAE、Diffusion）原理与实现
+✅ 使用贝叶斯优化进行逆向设计
+✅ 理解大语言模型在材料科学中的应用
+✅ 构建Text-to-Structure生成系统
+✅ 实现RAG检索增强生成系统
+✅ 掌握提示工程技术和最佳实践
+✅ 开发自主发现的MOF智能体
+✅ 集成AutoML进行自动化优化
+✅ 为AI辅助材料发现打下坚实基础
 
 ---
 
@@ -829,6 +1142,58 @@ MIT License
 ---
 
 ## 🔄 更新日志
+
+**v0.5.0** (2024-11)
+- ✅ 新增第五天完整课程材料
+- ✅ 新增LLM应用理论文档（100+页）
+  - LLM演进（ChatGPT → MatGPT → ChemLLM）
+  - Text-to-Structure生成方法
+  - RAG检索增强生成系统
+  - 提示工程技术
+  - 智能体架构设计
+- ✅ 新增Text-to-Structure生成工具 (text_to_structure.py)
+  - 三种生成方法（retrieval/generation/hybrid）
+  - 结构验证与排序
+  - 易于集成真实LLM API
+- ✅ 新增RAG系统实现 (rag_system.py)
+  - 向量数据库与语义检索
+  - 文档分块与嵌入
+  - 上下文增强生成
+  - 知识库管理
+- ✅ 新增智能体系统 (mof_agent_system.py)
+  - 文献挖掘与知识抽取
+  - AutoML自动优化
+  - 自主发现循环
+- ✅ 新增提示工程工具包 (prompt_engineering.py)
+  - 预定义模板库
+  - Few-shot学习管理
+  - Chain-of-Thought提示
+  - 自动提示优化
+- ✅ 新增第五天实操教程 (day5_tutorial.ipynb)
+  - 7个完整部分
+  - 可视化和练习
+- ✅ 新增第五天课程总结 (DAY5_SUMMARY.md)
+
+**v0.4.0** (2024-11)
+- ✅ 新增第四天完整课程材料
+- ✅ 新增生成模型理论文档（80+页）
+  - VAE理论与ELBO推导
+  - 扩散模型（DDPM）详解
+  - 贝叶斯优化与逆向设计
+  - 可合成性评估
+- ✅ 新增MOF-VAE模型实现 (mof_vae.py)
+  - GNN编码器/解码器
+  - 重参数化技巧
+  - 潜在空间操作
+- ✅ 新增MOF扩散模型 (mof_diffusion.py)
+  - DDPM算法
+  - 噪声调度策略
+  - 采样生成
+- ✅ 新增贝叶斯优化工具 (bayesian_optimizer.py)
+  - 高斯过程
+  - 采集函数（EI/UCB/PI）
+  - MOF逆向设计器
+- ✅ 新增第四天课程总结 (DAY4_SUMMARY.md)
 
 **v0.3.0** (2024-11)
 - ✅ 新增第三天完整课程材料
