@@ -215,6 +215,7 @@ metal-organic-framework/
 ├── notebooks/                   # Jupyter Notebooks
 │   ├── day1_tutorial.ipynb     # 第一天实操教程
 │   ├── day2_tutorial.ipynb     # 第二天实操教程
+│   ├── day4_tutorial.ipynb     # 第四天实操教程 🎨
 │   └── day5_tutorial.ipynb     # 第五天实操教程 🤖
 ├── src/                         # 源代码
 │   ├── visualization/          # 可视化工具
@@ -236,7 +237,9 @@ metal-organic-framework/
 │   ├── generative_models/      # 生成模型 (Day 4) 🎨
 │   │   ├── mof_vae.py                    # MOF-VAE模型
 │   │   ├── mof_diffusion.py              # MOF扩散模型
-│   │   └── bayesian_optimizer.py         # 贝叶斯优化工具
+│   │   ├── bayesian_optimizer.py         # 贝叶斯优化工具
+│   │   ├── visualization.py              # 可视化工具
+│   │   └── evaluator.py                  # 生成MOF评估工具
 │   └── llm_tools/              # LLM工具 (Day 5) 🤖
 │       ├── text_to_structure.py          # Text-to-Structure生成
 │       ├── mof_agent_system.py           # MOF智能体系统
@@ -525,6 +528,67 @@ x_generated = diffusion_model.sample(
 print(f"生成的节点特征: {x_generated.shape}")
 ```
 
+```python
+# 可视化潜在空间
+from src.generative_models.visualization import LatentSpaceVisualizer
+
+# 创建可视化器
+viz = LatentSpaceVisualizer()
+
+# 编码训练数据到潜在空间
+latent_vectors = []
+properties = []
+for batch in train_loader:
+    with torch.no_grad():
+        mu, logvar = vae_model.encode(batch)
+        z = vae_model.reparameterize(mu, logvar)
+        latent_vectors.append(z.cpu().numpy())
+        properties.append(batch.y.cpu().numpy())
+
+latent_vectors = np.concatenate(latent_vectors)
+properties = np.concatenate(properties)
+
+# 绘制2D潜在空间（按性质着色）
+viz.plot_latent_space_2d(
+    latent_vectors,
+    properties,
+    method='tsne',
+    property_name='CO2 Uptake (mmol/g)'
+)
+```
+
+```python
+# 评估生成MOF的质量
+from src.generative_models.evaluator import GeneratedMOFEvaluator
+
+# 生成一批MOF
+generated_mofs = []
+with torch.no_grad():
+    for _ in range(100):
+        node, adj, edge = vae_model.sample(num_samples=1)
+        generated_mofs.append({
+            'node_features': node[0],
+            'adj_matrix': adj[0],
+            'edge_features': edge[0]
+        })
+
+# 创建评估器
+evaluator = GeneratedMOFEvaluator(verbose=True)
+
+# 综合评估
+results = evaluator.comprehensive_evaluation(
+    generated_structures=generated_mofs,
+    reference_structures=train_dataset[:100],
+    generated_properties=np.array([...]),  # 预测的性质
+    reference_properties=np.array([...]),   # 参考性质
+    property_name='CO2 Uptake'
+)
+
+print(f"有效率: {results['validity']['validity_rate']:.1%}")
+print(f"唯一率: {results['uniqueness']['uniqueness_rate']:.1%}")
+print(f"多样性得分: {results['diversity']['diversity_score']:.3f}")
+```
+
 **第五天新增：LLM智能设计工具**
 
 ```python
@@ -739,15 +803,19 @@ print(f"Optimized features: {result['engineered_features'][:5]}...")
 
 **实操练习 (5-6 小时)**
 1. 阅读 [第四天课程总结](docs/DAY4_SUMMARY.md)
-2. 训练 MOF-VAE 模型并理解潜在空间
-3. 使用 VAE 生成新 MOF 结构
-4. 实现潜在空间插值可视化
-5. 运行贝叶斯优化进行逆向设计
-6. 测试扩散模型生成过程
-7. 完成练习题：
+2. 运行 [第四天实操教程](notebooks/day4_tutorial.ipynb)
+3. 训练 MOF-VAE 模型并理解潜在空间
+4. 使用 VAE 生成新 MOF 结构
+5. 实现潜在空间插值可视化
+6. 运行贝叶斯优化进行逆向设计
+7. 测试扩散模型生成过程
+8. 使用可视化工具分析潜在空间
+9. 使用评估工具评估生成MOF质量
+10. 完成练习题：
    - 优化特定性质（如高CO₂吸附量）
    - 多目标优化实验
    - 评估生成MOF的合理性
+   - 调整VAE超参数观察效果
 
 **进阶任务 (可选)**
 1. 实现条件VAE（cVAE）
@@ -905,6 +973,44 @@ print(f"Optimized features: {result['engineered_features'][:5]}...")
     - VAE + BO集成
     - 性质导向生成
     - 潜在空间优化
+
+**可视化工具**
+- **visualization.py**: 生成模型可视化
+  - **LatentSpaceVisualizer**: 潜在空间可视化
+    - 2D降维可视化（PCA/t-SNE）
+    - 潜在分布直方图
+    - 插值路径可视化
+  - **DiffusionVisualizer**: 扩散过程可视化
+    - 去噪轨迹可视化
+    - 噪声调度曲线
+  - **OptimizationVisualizer**: 优化过程可视化
+    - 优化历史曲线
+    - 采集函数可视化
+    - Pareto前沿绘制
+  - **TrainingVisualizer**: 训练曲线可视化
+    - VAE损失（ELBO, 重构, KL）
+    - 多指标对比
+
+**评估工具**
+- **evaluator.py**: 生成MOF质量评估
+  - **GeneratedMOFEvaluator**: 综合评估器
+    - 有效性评估（Validity）
+      - 结构完整性检查
+      - 物理合理性验证
+    - 唯一性评估（Uniqueness）
+      - 结构相似度计算
+      - 去重统计
+    - 多样性评估（Diversity）
+      - 平均成对距离
+      - 特征空间覆盖
+      - 分布熵
+    - 新颖性评估（Novelty）
+      - k-最近邻距离
+      - 与训练集的差异
+    - 性质分布评估
+      - Wasserstein距离
+      - KS检验
+      - 统计量对比
 
 ### 第五天工具 🤖
 
@@ -1173,6 +1279,27 @@ MIT License
   - 7个完整部分
   - 可视化和练习
 - ✅ 新增第五天课程总结 (DAY5_SUMMARY.md)
+
+**v0.4.1** (2024-11)
+- ✅ 增强第四天课程材料
+- ✅ 新增第四天实操教程 (day4_tutorial.ipynb)
+  - 7个完整部分的Jupyter教程
+  - VAE训练与潜在空间探索
+  - 扩散模型采样
+  - 贝叶斯优化逆向设计
+  - 端到端设计流程
+- ✅ 新增生成模型可视化工具 (visualization.py)
+  - 潜在空间可视化（PCA/t-SNE）
+  - 扩散过程可视化
+  - 优化历史可视化
+  - 训练曲线可视化
+- ✅ 新增生成MOF评估工具 (evaluator.py)
+  - 有效性评估（结构完整性）
+  - 唯一性评估（去重）
+  - 多样性评估（覆盖范围）
+  - 新颖性评估（与训练集差异）
+  - 性质分布评估（统计检验）
+- ✅ 更新README包含新工具的完整文档
 
 **v0.4.0** (2024-11)
 - ✅ 新增第四天完整课程材料
